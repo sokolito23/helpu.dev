@@ -1,0 +1,760 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HelpU - Real-Time Clinical Documentation Integrity</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0B1220;
+    --teal: #0D9488;
+    --teal-light: #14B8A6;
+    --white: #FFFFFF;
+    --rule: rgba(13,148,136,0.18);
+    --mono: 'DM Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'Instrument Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--white);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 3rem;
+    border-bottom: 1px solid var(--rule);
+    background: rgba(11,18,32,0.85);
+    backdrop-filter: blur(16px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    text-decoration: none;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    margin-top: 0.12rem;
+  }
+
+  .logo-lockup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+    gap: 0.18rem;
+  }
+
+  .logo-wordmark {
+    font-family: var(--serif);
+    font-size: 1.42rem;
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+
+  .logo-wordmark span { color: var(--teal-light); }
+
+  .logo-subline {
+    font-family: var(--mono);
+    font-size: 0.54rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.48);
+  }
+
+  nav ul {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  nav ul a {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav ul a:hover { color: var(--teal-light); }
+
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    border: 1px solid var(--teal);
+    padding: 0.5rem 1.25rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .nav-cta:hover {
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 8rem 3rem 5rem;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 20%, transparent 100%);
+  }
+
+  .hero-glow,
+  .hero-glow-2,
+  .cta-glow {
+    pointer-events: none;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: -10%;
+    right: -5%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(13,148,136,0.15) 0%, transparent 70%);
+  }
+
+  .hero-glow-2 {
+    position: absolute;
+    bottom: -20%;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(13,148,136,0.08) 0%, transparent 70%);
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hero-eyebrow,
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-eyebrow { margin-bottom: 1.5rem; }
+  .section-eyebrow { margin-bottom: 1rem; }
+
+  .hero-eyebrow::before,
+  .section-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--teal-light);
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: var(--white);
+  }
+
+  h1 em,
+  h2 em { font-style: italic; color: var(--teal-light); }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.6);
+    max-width: 420px;
+    margin-bottom: 2.5rem;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--teal);
+    color: var(--white);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    text-decoration: none;
+    border: 1px solid var(--teal);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: var(--teal-light);
+    border-color: var(--teal-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+
+  .btn-ghost:hover { color: var(--white); }
+
+  .sign-widget {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--rule);
+    padding: 2rem;
+    position: relative;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .sign-widget::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--teal), transparent);
+  }
+
+  .widget-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 1.25rem;
+    opacity: 0.8;
+  }
+
+  .widget-note {
+    background: rgba(255,255,255,0.04);
+    border-left: 2px solid rgba(255,255,255,0.1);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.7;
+    font-family: var(--mono);
+    font-weight: 300;
+  }
+
+  .widget-note .dx {
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+  }
+
+  .widget-alert {
+    border: 1px solid rgba(13,148,136,0.4);
+    background: rgba(13,148,136,0.08);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    animation: pulse-border 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%, 100% { border-color: rgba(13,148,136,0.4); }
+    50% { border-color: rgba(20,184,166,0.8); }
+  }
+
+  .alert-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .alert-text {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.75);
+  }
+
+  .alert-text strong {
+    color: var(--teal-light);
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .widget-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .w-btn {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .w-btn-accept {
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .w-btn-sign {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .stats-row {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 3rem;
+  }
+
+  .stat {
+    padding: 3rem 2rem;
+    border-right: 1px solid var(--rule);
+    text-align: center;
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 3.2rem;
+    color: var(--teal-light);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-num.stat-wide {
+    font-size: clamp(2.2rem, 3vw, 2.9rem);
+    letter-spacing: -0.03em;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.7;
+  }
+
+  .section {
+    position: relative;
+    z-index: 1;
+    padding: 7rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.5);
+    max-width: 500px;
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 4rem;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .step {
+    background: var(--ink);
+    padding: 2.5rem;
+    transition: background 0.3s;
+  }
+
+  .step:hover { background: rgba(13,148,136,0.05); }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    color: var(--teal);
+    margin-bottom: 1.25rem;
+    opacity: 0.7;
+  }
+
+  .step-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 1.25rem;
+    opacity: 0.9;
+  }
+
+  .step h3 {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .step p {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .cta-section {
+    position: relative;
+    z-index: 1;
+    padding: 8rem 3rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .cta-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(13,148,136,0.12) 0%, transparent 70%);
+  }
+
+  .cta-section h2 {
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .cta-section p {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.5);
+    max-width: 480px;
+    margin: 0 auto 3rem;
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--rule);
+    padding: 2.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  footer .logo-wordmark { font-size: 1.1rem; }
+
+  .footer-mono {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 980px) {
+    nav {
+      padding: 1rem 1.25rem;
+    }
+
+    nav ul {
+      display: none;
+    }
+
+    .hero,
+    .section,
+    .cta-section,
+    footer,
+    .stats-row {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .stats-row,
+    .steps {
+      grid-template-columns: 1fr;
+    }
+
+    .stat,
+    .step {
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .stat:last-child,
+    .step:last-child {
+      border-bottom: none;
+    }
+
+    footer {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" class="logo">
+    <svg class="logo-mark" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="4" width="6" height="28" rx="1" fill="#14B8A6"/>
+      <rect x="4" y="15" width="28" height="6" rx="1" fill="#14B8A6"/>
+      <path d="M2 10 L2 2 L10 2" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+      <path d="M26 2 L34 2 L34 10" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+      <path d="M2 26 L2 34 L10 34" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+      <path d="M26 34 L34 34 L34 26" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+    </svg>
+    <span class="logo-lockup">
+      <span class="logo-wordmark">Help<span>U</span></span>
+      <span class="logo-subline">Real-Time CDI&#8482;</span>
+    </span>
+  </a>
+  <ul>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Request Pilot</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Real-Time Clinical Documentation Integrity</div>
+      <h1>Real-time CDI<br><em>before</em><br>note sign.</h1>
+      <p class="hero-sub">HelpU helps physicians improve documentation completeness and specificity inside the EHR workflow with high-confidence, physician-reviewed clarification prompts.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary"><span>Request a Pilot</span></a>
+        <a href="#how" class="btn-ghost">See how it works -&gt;</a>
+      </div>
+    </div>
+    <div class="sign-widget">
+      <div class="widget-label">EHR Note - Ready to Sign</div>
+      <div class="widget-note">
+        Patient: 74M admitted with worsening shortness of breath.<br>
+        Assessment: <span class="dx">AKI</span><br>
+        Plan: Trend creatinine, hold nephrotoxins.
+      </div>
+      <div class="widget-alert">
+        <svg class="alert-icon" viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="8" stroke="#14B8A6" stroke-width="1.5"/>
+          <path d="M9 5v5" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="9" cy="13" r="0.75" fill="#14B8A6"/>
+        </svg>
+        <div class="alert-text">
+          <strong>HelpU - Documentation Clarification</strong>
+          Assessment lists AKI, and CKD stage 3b is documented elsewhere in the note. Clarify whether the active renal condition is AKI on CKD stage 3b. Physician judgment required.
+        </div>
+      </div>
+      <div class="widget-actions">
+        <button class="w-btn w-btn-accept">Review Prompt</button>
+        <button class="w-btn w-btn-sign">Continue to Sign</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-row">
+  <div class="stat fade-up">
+    <div class="stat-num stat-wide">High-Confidence</div>
+    <div class="stat-label">prompts only</div>
+  </div>
+  <div class="stat fade-up" style="transition-delay:0.1s">
+    <div class="stat-num stat-wide">Note-Sign</div>
+    <div class="stat-label">workflow focused</div>
+  </div>
+  <div class="stat fade-up" style="transition-delay:0.2s">
+    <div class="stat-num stat-wide">Epic-Capable</div>
+    <div class="stat-label">integration ready</div>
+  </div>
+</div>
+
+<section class="section" id="how">
+  <div class="section-eyebrow">How It Works</div>
+  <h2>Built for the <em>moment of sign.</em></h2>
+  <p class="section-sub">HelpU is EHR-embedded by design and brings high-confidence documentation clarification into physician workflow at note sign.</p>
+  <div class="steps">
+    <div class="step fade-up">
+      <div class="step-num">01 -</div>
+      <svg class="step-icon" viewBox="0 0 40 40" fill="none">
+        <rect x="6" y="4" width="28" height="32" rx="2" stroke="#14B8A6" stroke-width="1.5"/>
+        <path d="M12 14h16M12 20h16M12 26h8" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h3>Note is written</h3>
+      <p>The physician completes the note as usual with no extra documentation step added during the encounter.</p>
+    </div>
+    <div class="step fade-up" style="transition-delay:0.1s">
+      <div class="step-num">02 -</div>
+      <svg class="step-icon" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="14" stroke="#14B8A6" stroke-width="1.5"/>
+        <path d="M20 12v9l5 5" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="2" fill="#14B8A6"/>
+      </svg>
+      <h3>Sign is clicked</h3>
+      <p>At note sign, HelpU evaluates the current documentation for high-confidence clarification opportunities.</p>
+    </div>
+    <div class="step fade-up" style="transition-delay:0.2s">
+      <div class="step-num">03 -</div>
+      <svg class="step-icon" viewBox="0 0 40 40" fill="none">
+        <path d="M8 20l8 8 16-16" stroke="#14B8A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="20" cy="20" r="14" stroke="#14B8A6" stroke-width="1.5"/>
+      </svg>
+      <h3>Review and decide</h3>
+      <p>The physician reviews optional, non-leading prompts and decides whether to accept or ignore them. HelpU never auto-edits the note.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contact">
+  <div class="cta-glow"></div>
+  <div class="section-eyebrow" style="justify-content:center; margin-bottom:1.5rem;">Get Started</div>
+  <h2>Ready to run a 90-day pilot?</h2>
+  <p>Start with hospitalist inpatient workflow and measure documentation impact, physician acceptance, and retrospective CDI reduction.</p>
+  <a href="mailto:hello@helpu.dev" class="btn-primary"><span>Request a Pilot -&gt;</span></a>
+</section>
+
+<footer>
+  <a href="#" class="logo">
+    <svg class="logo-mark" viewBox="0 0 36 36" fill="none">
+      <rect x="15" y="4" width="6" height="28" rx="1" fill="#14B8A6"/>
+      <rect x="4" y="15" width="28" height="6" rx="1" fill="#14B8A6"/>
+      <path d="M2 10 L2 2 L10 2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+      <path d="M26 2 L34 2 L34 10" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+      <path d="M2 26 L2 34 L10 34" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+      <path d="M26 34 L34 34 L34 26" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+    </svg>
+    <span class="logo-wordmark">Help<span>U</span></span>
+  </a>
+  <div class="footer-mono">&copy; 2026 HelpU - Real-Time Clinical Documentation Integrity</div>
+  <div class="footer-mono">hello@helpu.dev</div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
+</script>
+</body>
+</html>

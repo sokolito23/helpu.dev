@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HelpU Demo - Real-Time CDI</title>
+<meta name="description" content="HelpU live demo for real-time clinical documentation integrity at note sign.">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0b1220;
+    --panel: #111827;
+    --panel-2: #162033;
+    --line: rgba(255,255,255,0.13);
+    --line-strong: rgba(20,184,166,0.44);
+    --teal: #0d9488;
+    --teal-2: #14b8a6;
+    --gold: #f6c453;
+    --white: #ffffff;
+    --muted: rgba(255,255,255,0.66);
+    --quiet: rgba(255,255,255,0.42);
+    --mono: "DM Mono", monospace;
+    --serif: "DM Serif Display", serif;
+    --sans: "Instrument Sans", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    min-height: 100vh;
+    background:
+      linear-gradient(180deg, rgba(13,148,136,0.14) 0%, rgba(11,18,32,0) 34rem),
+      var(--ink);
+    color: var(--white);
+    font-family: var(--sans);
+    line-height: 1.55;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, black, transparent 72%);
+  }
+
+  a { color: inherit; }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+  }
+
+  header {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line-strong);
+    background: rgba(20,184,166,0.09);
+  }
+
+  .brand-mark svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .brand-text {
+    display: grid;
+    gap: 1px;
+  }
+
+  .brand-name {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .brand-name span { color: var(--teal-2); }
+
+  .brand-line {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--quiet);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  nav a {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  nav a:hover { color: var(--white); }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    border: 1px solid var(--line-strong);
+    background: rgba(20,184,166,0.11);
+    color: #b8fff4;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 10px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--teal-2);
+    box-shadow: 0 0 0 5px rgba(20,184,166,0.13);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 42px;
+    align-items: center;
+    padding: 74px 0 58px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 6vw, 5.8rem);
+    line-height: 0.94;
+    letter-spacing: 0;
+    margin: 20px 0 22px;
+  }
+
+  h1 em {
+    color: var(--teal-2);
+    font-style: italic;
+  }
+
+  .lead {
+    max-width: 560px;
+    color: var(--muted);
+    font-size: 1.05rem;
+    font-weight: 300;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid var(--line);
+    color: var(--white);
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: transform 0.18s, background 0.18s, border-color 0.18s;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--line-strong);
+  }
+
+  .btn.primary {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+
+  .btn.primary:hover {
+    background: var(--teal-2);
+    border-color: var(--teal-2);
+  }
+
+  .preview {
+    border: 1px solid var(--line-strong);
+    background: rgba(255,255,255,0.04);
+    box-shadow: 0 28px 80px rgba(0,0,0,0.26);
+  }
+
+  .preview-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 42px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,255,255,0.045);
+  }
+
+  .preview-title {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .preview-status {
+    color: #b8fff4;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .browser-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .browser-dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.25);
+  }
+
+  .preview-frame {
+    aspect-ratio: 16 / 10;
+    background: #eef3f7;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preview-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: white;
+  }
+
+  .section {
+    padding: 54px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 28px;
+    margin-bottom: 24px;
+  }
+
+  .eyebrow {
+    color: var(--teal-2);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    max-width: 720px;
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    line-height: 1.04;
+    letter-spacing: 0;
+  }
+
+  .section-copy {
+    max-width: 430px;
+    color: var(--muted);
+    font-size: 0.98rem;
+    font-weight: 300;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    border: 1px solid var(--line);
+    background: var(--line);
+  }
+
+  .card {
+    min-height: 190px;
+    background: rgba(17,24,39,0.9);
+    padding: 24px;
+  }
+
+  .card strong {
+    display: block;
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .card h3 {
+    font-size: 1.12rem;
+    margin-bottom: 10px;
+  }
+
+  .card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 300;
+  }
+
+  .demo-flow {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 1px;
+    border: 1px solid var(--line);
+    background: var(--line);
+  }
+
+  .flow-note,
+  .flow-panel {
+    background: rgba(17,24,39,0.92);
+    padding: 26px;
+  }
+
+  .flow-note textarea {
+    width: 100%;
+    min-height: 250px;
+    resize: vertical;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: #f8fafc;
+    color: #172033;
+    font: 0.9rem/1.55 var(--sans);
+    padding: 16px;
+    outline: none;
+  }
+
+  .flow-panel {
+    display: grid;
+    gap: 16px;
+  }
+
+  .finding {
+    border-left: 3px solid var(--teal-2);
+    background: rgba(20,184,166,0.09);
+    padding: 14px 16px;
+  }
+
+  .finding .label {
+    color: #b8fff4;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .finding p {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .guardrail {
+    border: 1px solid rgba(246,196,83,0.42);
+    background: rgba(246,196,83,0.08);
+    padding: 18px 20px;
+    color: rgba(255,255,255,0.78);
+    font-size: 0.92rem;
+  }
+
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 34px 0;
+    border-top: 1px solid var(--line);
+    color: var(--quiet);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  footer a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  @media (max-width: 940px) {
+    .shell { width: min(100% - 28px, 1180px); }
+
+    header {
+      align-items: flex-start;
+      flex-direction: column;
+      padding: 16px 0;
+    }
+
+    nav { flex-wrap: wrap; }
+
+    .hero,
+    .demo-flow,
+    .grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero {
+      padding: 44px 0 38px;
+    }
+
+    .section-head {
+      display: block;
+    }
+
+    .section-copy {
+      margin-top: 14px;
+    }
+
+    .preview-frame {
+      aspect-ratio: 4 / 3;
+    }
+
+    footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="4" width="6" height="28" rx="1" fill="#14b8a6"/>
+          <rect x="4" y="15" width="28" height="6" rx="1" fill="#14b8a6"/>
+          <path d="M2 10 L2 2 L10 2" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none"/>
+          <path d="M26 2 L34 2 L34 10" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none"/>
+          <path d="M2 26 L2 34 L10 34" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none"/>
+          <path d="M26 34 L34 34 L34 26" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">Help<span>U</span></span>
+        <span class="brand-line">Real-Time CDI</span>
+      </span>
+    </a>
+    <nav aria-label="Demo navigation">
+      <a href="#walkthrough">Walkthrough</a>
+      <a href="#live-demo">Live Demo</a>
+      <a href="mailto:hello@helpu.dev">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="pill"><span class="dot"></span> Live Demo Active</div>
+        <h1>HelpU <em>before</em> note sign.</h1>
+        <p class="lead">A partner-ready walkthrough of the recovered HelpU demo: an Epic-capable CDI workflow that evaluates draft notes at sign time and returns physician-reviewable clarification prompts.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://demo.helpu.dev/demo" target="_blank" rel="noopener">Open Live Demo</a>
+          <a class="btn" href="#walkthrough">View 4-Minute Flow</a>
+        </div>
+      </div>
+
+      <div class="preview" id="live-demo">
+        <div class="preview-bar">
+          <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="preview-title">demo.helpu.dev/demo</div>
+          <div class="preview-status">Connected</div>
+        </div>
+        <div class="preview-frame">
+          <iframe src="https://demo.helpu.dev/demo" title="Live HelpU demo"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="walkthrough">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">4-Minute Partner Walkthrough</div>
+          <h2>Show the moment HelpU changes the note-sign workflow.</h2>
+        </div>
+        <p class="section-copy">Keep the demo focused: start with a synthetic inpatient note, click Sign Note, then walk through the CDI cards without sending real patient information.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <strong>01</strong>
+          <h3>Set the scene</h3>
+          <p>Explain that HelpU is triggered at note sign, not as a separate physician task or retrospective CDI queue.</p>
+        </div>
+        <div class="card">
+          <strong>02</strong>
+          <h3>Run the audit</h3>
+          <p>Use a built-in sample or a synthetic note, then click Sign Note to call the live CDS service.</p>
+        </div>
+        <div class="card">
+          <strong>03</strong>
+          <h3>Review the cards</h3>
+          <p>Show that prompts are optional, physician-reviewed, and designed to clarify documentation before signing.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Suggested Demo Script</div>
+          <h2>A simple note that reliably shows the product.</h2>
+        </div>
+        <p class="section-copy">This page includes an example for discussion only. The live demo can also use the built-in sample buttons.</p>
+      </div>
+
+      <div class="demo-flow">
+        <div class="flow-note">
+          <textarea readonly>HISTORY &amp; PHYSICAL
+
+71-year-old male with CHF, CKD, atrial fibrillation, COPD, hypertension, and type 2 diabetes presents with shortness of breath, orthopnea, and bilateral leg swelling.
+
+Oxygen saturation was 88% on room air and improved on 2L nasal cannula. BNP is elevated. Chest X-ray shows cardiomegaly, infiltrates, and mild pulmonary vascular congestion.
+
+Assessment:
+1. Shortness of breath and hypoxia
+2. CHF exacerbation
+3. Pneumonia
+4. CKD
+5. Atrial fibrillation
+6. Type 2 diabetes mellitus</textarea>
+        </div>
+        <div class="flow-panel">
+          <div class="finding">
+            <div class="label">Expected discussion point</div>
+            <p>HelpU should identify documentation opportunities such as respiratory failure clarification, heart failure specificity, and anemia documentation when supported by the note.</p>
+          </div>
+          <div class="finding">
+            <div class="label">Investor angle</div>
+            <p>The value is timing: the physician sees the clarification while the note is still being signed, reducing downstream rework.</p>
+          </div>
+          <div class="finding">
+            <div class="label">Clinical guardrail</div>
+            <p>HelpU does not diagnose, auto-edit, or override the clinician. It surfaces prompts for physician judgment.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Demo Rules</div>
+          <h2>Keep the founder demo clean.</h2>
+        </div>
+        <p class="section-copy">These guardrails help keep the public demo appropriate for partner and investor conversations.</p>
+      </div>
+      <div class="guardrail">
+        Use synthetic notes only. Do not paste real patient notes, identifiers, PHI, access tokens, credentials, or hospital-private material into the live demo.
+      </div>
+      <div class="actions">
+        <a class="btn primary" href="https://demo.helpu.dev/demo" target="_blank" rel="noopener">Launch Product Demo</a>
+        <a class="btn" href="mailto:hello@helpu.dev">Schedule Follow-Up</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>HelpU Demo</span>
+    <a href="mailto:hello@helpu.dev">hello@helpu.dev</a>
+    <span>Real-Time Clinical Documentation Integrity</span>
+  </footer>
+</div>
+</body>
+</html>

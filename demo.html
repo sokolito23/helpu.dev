@@ -485,7 +485,7 @@
       </span>
     </a>
     <nav aria-label="Demo navigation">
-      <a href="#walkthrough">Walkthrough</a>
+      <a href="#sample-note">Sample Note</a>
       <a href="#live-demo">Live Demo</a>
       <a href="mailto:hello@helpu.dev">Contact</a>
     </nav>
@@ -496,10 +496,10 @@
       <div>
         <div class="pill"><span class="dot"></span> Live Demo Active</div>
         <h1>HelpU <em>before</em> note sign.</h1>
-        <p class="lead">HelpU demo: an Epic-capable CDI workflow that evaluates draft notes at sign time and returns physician-reviewable clarification prompts.</p>
+        <p class="lead">HelpU is an Epic-capable real-time CDI workflow that evaluates draft notes at sign time and returns physician-reviewable clarification cards before the note is signed.</p>
         <div class="actions">
           <a class="btn primary" href="https://demo.helpu.dev/demo" target="_blank" rel="noopener">Open Live Demo</a>
-          <a class="btn" href="#walkthrough">See Product Flow</a>
+          <a class="btn" href="#sample-note">View Sample Note</a>
         </div>
       </div>
 
@@ -515,41 +515,13 @@
       </div>
     </section>
 
-    <section class="section" id="walkthrough">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Product Overview</div>
-          <h2>Real-time CDI at the moment of note sign.</h2>
-        </div>
-        <p class="section-copy">Use this page to introduce HelpU, then open the live demo and run the synthetic H&amp;P sample below.</p>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <strong>01</strong>
-          <h3>Write the note</h3>
-          <p>The physician documents normally inside the EHR workflow, without adding a separate CDI task during the encounter.</p>
-        </div>
-        <div class="card">
-          <strong>02</strong>
-          <h3>Audit before sign</h3>
-          <p>When Sign Note is clicked, HelpU evaluates the draft note through an Epic-capable CDS workflow.</p>
-        </div>
-        <div class="card">
-          <strong>03</strong>
-          <h3>Review CDI cards</h3>
-          <p>HelpU returns focused clarification cards for physician review while the note is still open.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
+    <section class="section" id="sample-note">
       <div class="section-head">
         <div>
           <div class="eyebrow">Sample Note</div>
-          <h2>Use this synthetic H&amp;P to show the live demo.</h2>
+          <h2>Synthetic H&amp;P for the live HelpU demo.</h2>
         </div>
-        <p class="section-copy">Paste this sample into the live demo, click Sign Note, then discuss the returned CDI cards.</p>
+        <p class="section-copy">The sample below demonstrates the type of synthetic inpatient documentation HelpU can evaluate at note sign.</p>
       </div>
 
       <div class="demo-flow">
@@ -571,34 +543,27 @@ Assessment:
         <div class="flow-panel">
           <div class="finding">
             <div class="label">What HelpU surfaces</div>
-            <p>The demo can surface supported documentation opportunities such as respiratory failure clarification, heart failure specificity, and anemia documentation.</p>
+            <p>HelpU can surface supported documentation opportunities such as respiratory failure clarification, heart failure specificity, and anemia documentation.</p>
           </div>
           <div class="finding">
-            <div class="label">Why timing matters</div>
-            <p>The value is timing: the physician sees the clarification while the note is still being signed, reducing downstream rework.</p>
+            <div class="label">Before note sign</div>
+            <p>The physician sees clarification cards while the note is still open, before downstream CDI review and rework.</p>
           </div>
           <div class="finding">
-            <div class="label">Clinical guardrail</div>
-            <p>HelpU does not diagnose, auto-edit, or override the clinician. It presents clarification cards for physician judgment.</p>
+            <div class="label">Physician control</div>
+            <p>HelpU does not diagnose, auto-edit, or override the clinician. It presents clarification cards for physician judgment before signing.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Demo Rules</div>
-          <h2>Keep the founder demo clean.</h2>
-        </div>
-        <p class="section-copy">These guardrails help keep the public demo appropriate for partner and investor conversations.</p>
-      </div>
+    <section class="section" id="demo-safety">
       <div class="guardrail">
-        Use synthetic notes only. Do not paste real patient notes, identifiers, PHI, access tokens, credentials, or hospital-private material into the live demo.
+        Uses synthetic notes only. NO real patient notes, identifiers, PHI, access tokens, credentials, or hospital-private material are found in any part of the live demo.
       </div>
       <div class="actions">
         <a class="btn primary" href="https://demo.helpu.dev/demo" target="_blank" rel="noopener">Launch Product Demo</a>
-        <a class="btn" href="mailto:hello@helpu.dev">Schedule Follow-Up</a>
+        <a class="btn" href="mailto:hello@helpu.dev">Contact HelpU</a>
       </div>
     </section>
   </main>

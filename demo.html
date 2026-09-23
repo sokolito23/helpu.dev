@@ -499,7 +499,7 @@
         <p class="lead">HelpU demo: an Epic-capable CDI workflow that evaluates draft notes at sign time and returns physician-reviewable clarification prompts.</p>
         <div class="actions">
           <a class="btn primary" href="https://demo.helpu.dev/demo" target="_blank" rel="noopener">Open Live Demo</a>
-          <a class="btn" href="#walkthrough">View 4-Minute Flow</a>
+          <a class="btn" href="#walkthrough">See Product Flow</a>
         </div>
       </div>
 
@@ -518,27 +518,27 @@
     <section class="section" id="walkthrough">
       <div class="section-head">
         <div>
-          <div class="eyebrow">4-Minute Partner Walkthrough</div>
-          <h2>Show the moment HelpU changes the note-sign workflow.</h2>
+          <div class="eyebrow">Product Overview</div>
+          <h2>Real-time CDI at the moment of note sign.</h2>
         </div>
-        <p class="section-copy">Keep the demo focused: start with a synthetic inpatient note, click Sign Note, then walk through the CDI cards without sending real patient information.</p>
+        <p class="section-copy">Use this page to introduce HelpU, then open the live demo and run the synthetic H&amp;P sample below.</p>
       </div>
 
       <div class="grid">
         <div class="card">
           <strong>01</strong>
-          <h3>Set the scene</h3>
-          <p>Explain that HelpU is triggered at note sign, not as a separate physician task or retrospective CDI queue.</p>
+          <h3>Write the note</h3>
+          <p>The physician documents normally inside the EHR workflow, without adding a separate CDI task during the encounter.</p>
         </div>
         <div class="card">
           <strong>02</strong>
-          <h3>Run the audit</h3>
-          <p>Use a built-in sample or a synthetic note, then click Sign Note to call the live CDS service.</p>
+          <h3>Audit before sign</h3>
+          <p>When Sign Note is clicked, HelpU evaluates the draft note through an Epic-capable CDS workflow.</p>
         </div>
         <div class="card">
           <strong>03</strong>
-          <h3>Review the cards</h3>
-          <p>Show that prompts are optional, physician-reviewed, and designed to clarify documentation before signing.</p>
+          <h3>Review CDI cards</h3>
+          <p>HelpU returns focused clarification cards for physician review while the note is still open.</p>
         </div>
       </div>
     </section>
@@ -546,10 +546,10 @@
     <section class="section">
       <div class="section-head">
         <div>
-          <div class="eyebrow">Suggested Demo Script</div>
-          <h2>A simple note that reliably shows the product.</h2>
+          <div class="eyebrow">Sample Note</div>
+          <h2>Use this synthetic H&amp;P to show the live demo.</h2>
         </div>
-        <p class="section-copy">This page includes an example for discussion only. The live demo can also use the built-in sample buttons.</p>
+        <p class="section-copy">Paste this sample into the live demo, click Sign Note, then discuss the returned CDI cards.</p>
       </div>
 
       <div class="demo-flow">
@@ -570,16 +570,16 @@ Assessment:
         </div>
         <div class="flow-panel">
           <div class="finding">
-            <div class="label">Expected discussion point</div>
-            <p>HelpU should identify documentation opportunities such as respiratory failure clarification, heart failure specificity, and anemia documentation when supported by the note.</p>
+            <div class="label">What HelpU surfaces</div>
+            <p>The demo can surface supported documentation opportunities such as respiratory failure clarification, heart failure specificity, and anemia documentation.</p>
           </div>
           <div class="finding">
-            <div class="label">Investor angle</div>
+            <div class="label">Why timing matters</div>
             <p>The value is timing: the physician sees the clarification while the note is still being signed, reducing downstream rework.</p>
           </div>
           <div class="finding">
             <div class="label">Clinical guardrail</div>
-            <p>HelpU does not diagnose, auto-edit, or override the clinician. It surfaces prompts for physician judgment.</p>
+            <p>HelpU does not diagnose, auto-edit, or override the clinician. It presents clarification cards for physician judgment.</p>
           </div>
         </div>
       </div>
